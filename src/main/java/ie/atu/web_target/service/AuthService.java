@@ -4,6 +4,7 @@ import ie.atu.web_target.dto.LoginRequestDTO;
 import ie.atu.web_target.model.LoginAttempt;
 import ie.atu.web_target.model.User;
 import ie.atu.web_target.repository.LoginAttemptRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class AuthService {
     //   password: anything
     // This bypasses the password check entirely.
     // ---------------------------------------------------------------
+    @Transactional
     public User vulnerableLogin(LoginRequestDTO request) {
 
         // Raw SQL built from user input - vulnerable to SQL injection

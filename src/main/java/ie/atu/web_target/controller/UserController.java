@@ -1,10 +1,15 @@
 package ie.atu.web_target.controller;
 
-import ie.atu.web_target.model.User;
-import ie.atu.web_target.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ie.atu.web_target.service.UserService;
+import jakarta.validation.Valid;
+import ie.atu.web_target.dto.UserResponseDTO;
+import ie.atu.web_target.dto.UserRequestDTO;
+import org.springframework.http.HttpStatus;
+
 
 import java.util.List;
 
@@ -15,20 +20,35 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     // GET /api/users - returns all users in the database as JSON
     @GetMapping
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     // GET /api/users/{id} - returns a single user by their ID
     // ResponseEntity lets us return a proper 404 if the user doesn't exist
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return userRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public  ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+        UserResponseDTO user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
+    @PostMapping
+    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO request) {
+        UserResponseDTO created = userService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequestDTO request)
+    {
+        UserResponseDTO updated = userService.updateUser(id, request);
+        return ResponseEntity.ok(updated);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }
